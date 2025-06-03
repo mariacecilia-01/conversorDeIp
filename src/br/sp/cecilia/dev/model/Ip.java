@@ -102,13 +102,4 @@ public class Ip {
 				}
 		}
 		
-		//calculo de subredes
-		public int calcularSubredes(int cidrNovo, int cidrOriginal) {
-	        int bitsEmprestados = cidrNovo - cidrOriginal;
-	        if (bitsEmprestados < 0 || cidrNovo > 32 || cidrOriginal < 0) {
-	            throw new IllegalArgumentException("Prefixos inválidos.");
-	        }
-	        return (int) Math.pow(2, bitsEmprestados);
-
-		}
 }
