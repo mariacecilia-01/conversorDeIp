@@ -7,8 +7,6 @@ public class ConversorApp {
 
 	public static void main(String[] args) {
 		
-		TelaConversorIp tela = new TelaConversorIp();
-		tela.criarTela();
 		
 		
 		

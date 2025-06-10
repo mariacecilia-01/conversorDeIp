@@ -6,6 +6,7 @@ public class Ip {
 	private String ip;
 	private int cidr;
 	private int bits;
+	private int[] octetos = new int[4];
 
 	//setters and getters
 	public void setIp(String ip) {
@@ -102,4 +103,58 @@ public class Ip {
 				}
 		}
 		
-}
+		//sub-redes
+		 public int calcularSalto() {
+		        if (cidr < 24 || cidr > 30) {
+		            return 0;
+		        }
+		        int hostBits = 32 - cidr;
+		        return (int) Math.pow(2, hostBits); // Total IPs per subnet, including network and broadcast
+		    }
+		
+
+	    public String showNetwork() {
+	        // Validate IP address
+	        String[] octetosIp = ip.split("\\.");
+	        if (octetosIp.length != 4) {
+	            return "Error: Invalid IP address!";
+	        }
+
+	        try {
+	            // Calculate subnet details
+	            cidrToMask(); // Ensure mask is calculated
+	            int ultimoOcteto = Integer.parseInt(octetosIp[3]);
+	            int networkOctet = ultimoOcteto & octetos[3]; // Apply mask to get network address
+	            int salto = calcularSalto();
+	            int numSubRedes = calcularIPsDisponiveis();
+
+	            StringBuilder resultado = new StringBuilder();
+
+	            // Iterate through subnets
+	            for (int i = 0; i < numSubRedes && (networkOctet + (i * salto)) <= 255; i++) {
+	                int currentOctet = networkOctet + (i * salto);
+	                resultado.append(String.format("\n SubRede: %d: %s.%s.%s.%d \n", 
+	                    i + 1, octetosIp[0], octetosIp[1], octetosIp[2], currentOctet));
+
+	                // List all usable IPs
+	                int primeiroIp = currentOctet + 1;
+	                int ultimoIp = currentOctet + salto - 2;
+	                resultado.append(" IPs Disponiveis: \n");
+	                for (int ip = primeiroIp; ip <= ultimoIp; ip++) {
+	                    resultado.append(String.format(" - %s.%s.%s.%d \n", 
+	                        octetosIp[0], octetosIp[1], octetosIp[2], ip));
+	             
+	                }
+
+	                // Broadcast address
+	                resultado.append(String.format("  Broadcast: %s.%s.%s.%d\n", 
+	                    octetosIp[0], octetosIp[1], octetosIp[2], currentOctet + salto - 1));
+	            }
+
+	            return resultado.toString();
+	        } catch (NumberFormatException e) {
+	            return "Error: Invalid last octet!";
+	        }
+	    }
+	}
+		
